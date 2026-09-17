@@ -1,0 +1,1 @@
+export function createEmgId(){const d=new Date();const date=`${d.getUTCFullYear()}${String(d.getUTCMonth()+1).padStart(2,'0')}${String(d.getUTCDate()).padStart(2,'0')}`;const entropy=crypto.randomUUID().replaceAll('-','').slice(0,6).toUpperCase();return `EMG-${date}-${entropy}`;}
