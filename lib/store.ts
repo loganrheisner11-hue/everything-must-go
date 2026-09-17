@@ -1,0 +1,6 @@
+import {InventoryItem} from './types';
+import {seed} from './seed';
+/** Storage boundary. UI never talks directly to a database. Replace MemoryStore with durable adapter without changing domain/UI code. */
+export interface InventoryStore{list():Promise<InventoryItem[]>;get(id:string):Promise<InventoryItem|null>;create(item:InventoryItem):Promise<InventoryItem>;update(id:string,patch:Partial<InventoryItem>):Promise<InventoryItem>;}
+export class MemoryStore implements InventoryStore{private items=new Map(seed.map(i=>[i.id,i]));async list(){return [...this.items.values()]};async get(id:string){return this.items.get(id)||null};async create(item:InventoryItem){if(this.items.has(item.id))throw new Error('DUPLICATE_ID');this.items.set(item.id,item);return item};async update(id:string,patch:Partial<InventoryItem>){const old=this.items.get(id);if(!old)throw new Error('NOT_FOUND');const next={...old,...patch,id,updatedAt:new Date().toISOString()};this.items.set(id,next);return next}}
+export const inventoryStore:InventoryStore=new MemoryStore();
