@@ -1,7 +1,12 @@
-export type Status='INTAKE'|'RESEARCH'|'DRAFT'|'NEEDS_LOGAN'|'LISTED'|'OFFER'|'SOLD';
+export type Status='INTAKE'|'RESEARCH'|'DRAFT'|'NEEDS_LOGAN'|'LISTED'|'OFFER'|'SOLD'|'ARCHIVED';
 export type Lane='HOUSEHOLD'|'CARD'|'FLIP';
+export type ApprovalKind='PUBLISH'|'PRICE_CHANGE'|'COUNTER'|'BUNDLE_CHANGE'|'FINAL_DISPOSITION';
 export interface PriceGuardrails{marketValue:number;ask:number;target:number;softFloor:number;hardFloor:number}
 export interface CardDetails{sport?:string;player?:string;year?:string;set?:string;cardNumber?:string;parallel?:string;rookie?:boolean;insert?:string;gradingCompany?:string;grade?:string}
-export interface InventoryItem{id:string;title:string;lane:Lane;category:string;condition:string;description:string;prices:PriceGuardrails;status:Status;photos:string[];primaryPhoto?:string;platforms:string[];listedAt?:string;soldPrice?:number;fees?:number;shipping?:number;acquisitionCost?:number;card?:CardDetails;nextAction:string;createdAt:string;updatedAt:string}
-export const canAcceptOffer=(offer:number,item:InventoryItem)=>offer>=item.prices.hardFloor;
+export interface SaleRecord{soldPrice:number;fees:number;shipping:number;otherCosts:number;soldAt:string;platform?:string;buyerRef?:string}
+export interface AuditEvent{id:string;inventoryId:string;kind:string;summary:string;actor:'LOGAN'|'EMG'|'SYSTEM';createdAt:string}
+export interface InventoryItem{id:string;title:string;lane:Lane;category:string;condition:string;description:string;prices:PriceGuardrails;status:Status;photos:string[];primaryPhoto?:string;platforms:string[];listedAt?:string;acquisitionCost?:number;card?:CardDetails;sale?:SaleRecord;nextAction:string;createdAt:string;updatedAt:string;version:number}
+export const canAcceptOffer=(offer:number,item:InventoryItem)=>Number.isFinite(offer)&&offer>=item.prices.hardFloor;
 export const needsLogan=(offer:number,item:InventoryItem)=>offer<item.prices.softFloor||item.status==='NEEDS_LOGAN';
+export const netCash=(item:InventoryItem)=>item.sale?item.sale.soldPrice-item.sale.fees-item.sale.shipping-item.sale.otherCosts:0;
+export const profit=(item:InventoryItem)=>netCash(item)-(item.acquisitionCost||0);
