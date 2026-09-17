@@ -1,0 +1,4 @@
+export interface StoredPhoto{id:string;inventoryId:string;url:string;pathname:string;contentType:string;size:number;isPrimary:boolean;createdAt:string}
+export interface PhotoStore{upload(input:{inventoryId:string;file:File;isPrimary?:boolean}):Promise<StoredPhoto>;remove(photo:StoredPhoto):Promise<void>}
+export const PHOTO_RULES={maxFilesPerItem:12,maxBytesPerFile:12*1024*1024,allowedTypes:['image/jpeg','image/png','image/webp','image/heic','image/heif']} as const;
+export function validatePhoto(file:File){if(file.size>PHOTO_RULES.maxBytesPerFile)throw new Error('PHOTO_TOO_LARGE');if(!(PHOTO_RULES.allowedTypes as readonly string[]).includes(file.type))throw new Error('PHOTO_TYPE_NOT_ALLOWED');return true;}
