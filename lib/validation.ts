@@ -1,0 +1,4 @@
+import {z} from 'zod';
+export const priceSchema=z.object({marketValue:z.number().nonnegative(),ask:z.number().nonnegative(),target:z.number().nonnegative(),softFloor:z.number().nonnegative(),hardFloor:z.number().nonnegative()}).superRefine((p,ctx)=>{if(p.hardFloor>p.softFloor)ctx.addIssue({code:'custom',message:'Hard floor cannot exceed soft floor'});if(p.softFloor>p.target)ctx.addIssue({code:'custom',message:'Soft floor cannot exceed target'});if(p.target>p.ask)ctx.addIssue({code:'custom',message:'Target cannot exceed ask'});});
+export const itemInputSchema=z.object({title:z.string().trim().min(2).max(120),lane:z.enum(['HOUSEHOLD','CARD','FLIP']),category:z.string().trim().min(2).max(80),condition:z.string().trim().min(2).max(80),description:z.string().max(4000),prices:priceSchema});
+export function assertOfferAboveHardFloor(offer:number,hardFloor:number){if(!Number.isFinite(offer)||offer<hardFloor)throw new Error('HARD_FLOOR_BLOCK');return true;}
