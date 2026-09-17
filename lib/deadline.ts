@@ -1,0 +1,5 @@
+export const LIQUIDATION_DEADLINE='2026-10-25T23:59:59-06:00';
+export type Urgency='MAXIMIZE'|'BALANCED'|'MOVE'|'FINAL';
+export function daysToDeadline(now=new Date()){return Math.max(0,Math.ceil((new Date(LIQUIDATION_DEADLINE).getTime()-now.getTime())/86400000))}
+export function urgency(now=new Date()):Urgency{const d=daysToDeadline(now);if(d>28)return'MAXIMIZE';if(d>14)return'BALANCED';if(d>5)return'MOVE';return'FINAL'}
+export function policy(now=new Date()){const u=urgency(now);return {urgency:u,daysRemaining:daysToDeadline(now),rule:u==='MAXIMIZE'?'Protect value; optimize listings before reducing price.':u==='BALANCED'?'Prioritize qualified demand and measured reductions above hard floor.':u==='MOVE'?'Increase bundle/cross-sell pressure while preserving hard floor.':'Escalate unsold inventory to Logan for final disposition; never cross hard floor automatically.'};}
