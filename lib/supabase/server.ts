@@ -1,4 +1,5 @@
-import { createServerClient } from '@supabase/ssr'\nimport type { Database } from '../database.types'
+import { createServerClient } from '@supabase/ssr'
+import type { Database } from '../database.types'
 import { cookies } from 'next/headers'
 
 export async function createClient() {
@@ -10,7 +11,9 @@ export async function createClient() {
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll(cookiesToSet) {
-        try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } catch {}
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
+        } catch {}
       },
     },
   })
